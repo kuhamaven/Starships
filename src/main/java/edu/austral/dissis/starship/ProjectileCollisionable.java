@@ -25,4 +25,10 @@ public class ProjectileCollisionable extends SquareCollisionable{
             this.projectile.destroy();
         }
     }
+
+    @Override
+    void collisionedWithAsteroid(AsteroidCollisionable collisionable) {
+        collisionable.asteroid.destroy();
+        this.projectile.destroy();
+    }
 }

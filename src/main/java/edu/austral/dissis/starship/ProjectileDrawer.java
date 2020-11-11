@@ -28,14 +28,16 @@ public class ProjectileDrawer {
         graphics.translate(position.getX(), position.getY());
         graphics.rotate(angle);
 
-        graphics.fill(255, 0, 0);
+//        graphics.fill(255, 0, 0);
+        graphics.noFill();
+        graphics.noStroke();
         graphics.rect(SQUARE_SIZE/-2f,SQUARE_SIZE/-2f,SQUARE_SIZE,SQUARE_SIZE);
         graphics.image(image, getImageCenter(), getImageCenter());
 
 
         graphics.popMatrix();
 
-        graphics.fill(0, 255, 0);
+//        graphics.fill(0, 255, 0);
     }
 
     private float calculateRotation(Projectile projectile) {

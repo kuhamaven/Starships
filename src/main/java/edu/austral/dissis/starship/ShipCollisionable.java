@@ -27,4 +27,10 @@ public class ShipCollisionable extends SquareCollisionable{
         collisionable.starship.destroy();
         this.starship.destroy();
     }
+
+    @Override
+    void collisionedWithAsteroid(AsteroidCollisionable collisionable) {
+        collisionable.asteroid.destroy();
+        this.starship.destroy();
+    }
 }

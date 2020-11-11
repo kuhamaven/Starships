@@ -26,27 +26,29 @@ public class AsteroidDrawer {
         graphics.translate(position.getX(), position.getY());
         graphics.rotate(angle);
 
-        graphics.fill(255, 0, 0);
+//        graphics.fill(255, 0, 0);
+        graphics.noFill();
+        graphics.noStroke();
         graphics.rect(image.pixelHeight/-2f,image.pixelHeight/-2f,image.pixelHeight,image.pixelHeight);
         graphics.image(image, getImageCenter(), getImageCenter());
 
 
         graphics.popMatrix();
 
-        graphics.fill(0, 255, 0);
+//        graphics.fill(0, 255, 0);
     }
 
     private float calculateRotation(Asteroid asteroid) {
         return asteroid.getDirection().rotate(PConstants.PI / 2).getAngle();
     }
 
-//    public SquareCollisionable getCollisionable(Projectile projectile) {
-//        return new ProjectileCollisionable(
-//                SQUARE_SIZE,
-//                calculateRotation(projectile),
-//                projectile.getPosition(),
-//                projectile
-//        );
-//    }
+    public SquareCollisionable getCollisionable(Asteroid asteroid) {
+        return new AsteroidCollisionable(
+                image.pixelHeight,
+                calculateRotation(asteroid),
+                asteroid.getPosition(),
+                asteroid
+        );
+    }
 }
 

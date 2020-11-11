@@ -42,4 +42,6 @@ public abstract class SquareCollisionable implements Collisionable<SquareCollisi
     abstract void collisionedWithProjectile(ProjectileCollisionable collisionable);
 
     abstract void collisionedWithShip(ShipCollisionable collisionable);
+
+    abstract void collisionedWithAsteroid(AsteroidCollisionable collisionable);
 }
