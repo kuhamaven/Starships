@@ -8,7 +8,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 
-public class SquareCollisionable implements Collisionable<SquareCollisionable> {
+public abstract class SquareCollisionable implements Collisionable<SquareCollisionable> {
     private final float size;
     private final float angle;
     private final Vector2 position;
@@ -38,4 +38,8 @@ public class SquareCollisionable implements Collisionable<SquareCollisionable> {
     public void collisionedWith(SquareCollisionable collisionable) {
         System.out.println("Collisioned with " + collisionable);
     }
+
+    abstract void collisionedWithProjectile(ProjectileCollisionable collisionable);
+
+    abstract void collisionedWithShip(ShipCollisionable collisionable);
 }

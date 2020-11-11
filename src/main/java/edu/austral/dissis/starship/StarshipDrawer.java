@@ -11,8 +11,8 @@ import java.awt.geom.Rectangle2D;
 import static edu.austral.dissis.starship.base.vector.Vector2.vector;
 
 public class StarshipDrawer {
-    private static final float IMAGE_SIZE = 200;
-    public static final int SQUARE_SIZE = 50;
+    private static final float IMAGE_SIZE = 100;
+    public static final int SQUARE_SIZE = 70;
 
     private final PImage image;
 
@@ -33,9 +33,9 @@ public class StarshipDrawer {
         graphics.translate(position.getX(), position.getY());
         graphics.rotate(angle);
 
-//        graphics.image(image, getImageCenter(), getImageCenter());
         graphics.fill(255, 0, 0);
-        graphics.rect(SQUARE_SIZE / -2f, SQUARE_SIZE / -2f, SQUARE_SIZE, SQUARE_SIZE);
+        graphics.rect(SQUARE_SIZE/ -2f, SQUARE_SIZE / -2f, SQUARE_SIZE, SQUARE_SIZE);
+        graphics.image(image, getImageCenter(), getImageCenter());
 
 
         graphics.popMatrix();
@@ -48,10 +48,11 @@ public class StarshipDrawer {
     }
 
     public SquareCollisionable getCollisionable(Starship starship) {
-        return new SquareCollisionable(
+        return new ShipCollisionable(
                 SQUARE_SIZE,
                 calculateRotation(starship),
-                starship.getPosition()
+                starship.getPosition(),
+                starship
         );
     }
 }
