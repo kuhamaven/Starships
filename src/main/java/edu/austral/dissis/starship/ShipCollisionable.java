@@ -18,19 +18,16 @@ public class ShipCollisionable extends SquareCollisionable{
     void collisionedWithProjectile(ProjectileCollisionable collisionable) {
         if(!collisionable.projectile.shipName.equals(starship.shipName)) {
             collisionable.projectile.destroy();
-            this.starship.destroy();
         }
     }
 
     @Override
     void collisionedWithShip(ShipCollisionable collisionable) {
         collisionable.starship.destroy();
-        this.starship.destroy();
     }
 
     @Override
     void collisionedWithAsteroid(AsteroidCollisionable collisionable) {
         collisionable.asteroid.destroy();
-        this.starship.destroy();
     }
 }

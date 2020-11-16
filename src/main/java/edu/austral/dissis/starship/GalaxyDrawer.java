@@ -1,33 +1,30 @@
 package edu.austral.dissis.starship;
 
-import edu.austral.dissis.starship.base.vector.Vector2;
-import processing.core.PConstants;
 import processing.core.PGraphics;
 import processing.core.PImage;
 
 public class GalaxyDrawer {
     private final PImage image;
+    private final PImage goImage;
 
-    public GalaxyDrawer(PImage image) {
+    public GalaxyDrawer(PImage image, PImage goImage) {
         this.image = image;
-    }
-
-    private float getImageCenter() {
-        return image.pixelHeight / -2f;
+        this.goImage = goImage;
     }
 
     public void draw(PGraphics graphics) {
-        final Vector2 position = Vector2.vector(0,360);
-        final float angle = 0;
-
         graphics.pushMatrix();
-
-        graphics.translate(position.getX(), position.getY());
-        graphics.rotate(angle);
         graphics.noFill();
         graphics.noStroke();
-        graphics.rect(image.pixelHeight/-2f,image.pixelWidth/-2f,image.pixelHeight,image.pixelWidth);
-        graphics.image(image, getImageCenter(), getImageCenter());
+        graphics.image(image, 0, 0);
+        graphics.popMatrix();
+    }
+
+    public void drawGameOver(PGraphics graphics){
+        graphics.pushMatrix();
+        graphics.noFill();
+        graphics.noStroke();
+        graphics.image(goImage, 0, 0);
         graphics.popMatrix();
     }
 

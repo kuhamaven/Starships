@@ -52,16 +52,16 @@ public class StarshipController {
     public Starship starshipWarpEdge(Starship starship,int width, int height){
         Vector2 current = starship.getPosition();
         if( current.getX()>width){
-            return new Starship(vector(0,current.getY()),starship.getDirection(),starship.active,starship.shipName,0);
+            return new Starship(vector(0,current.getY()),starship.getDirection(),starship.active,starship.shipName,starship.score,starship.lives);
         }
         else if(current.getX()<0){
-            return new Starship(vector(width,current.getY()),starship.getDirection(),starship.active,starship.shipName,0);
+            return new Starship(vector(width,current.getY()),starship.getDirection(),starship.active,starship.shipName,starship.score,starship.lives);
         }
         else if(current.getY()>height){
-            return new Starship(vector(current.getX(),0),starship.getDirection(),starship.active,starship.shipName,0);
+            return new Starship(vector(current.getX(),0),starship.getDirection(),starship.active,starship.shipName,starship.score,starship.lives);
         }
         else if(current.getY()<0){
-            return new Starship(vector(current.getX(), height),starship.getDirection(),starship.active,starship.shipName,0);
+            return new Starship(vector(current.getX(), height),starship.getDirection(),starship.active,starship.shipName,starship.score,starship.lives);
         }
         return starship;
     }

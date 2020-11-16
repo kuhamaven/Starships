@@ -25,6 +25,7 @@ public class StarshipDrawer {
     }
 
     public void draw(PGraphics graphics, Starship starship) {
+        if(starship.getLives()<1) return;
         final Vector2 position = starship.getPosition();
         final float angle = calculateRotation(starship);
 
@@ -50,6 +51,7 @@ public class StarshipDrawer {
     }
 
     public SquareCollisionable getCollisionable(Starship starship) {
+        if(starship.getLives()<1) return new NullCollisionable();
         return new ShipCollisionable(
                 SQUARE_SIZE,
                 calculateRotation(starship),
