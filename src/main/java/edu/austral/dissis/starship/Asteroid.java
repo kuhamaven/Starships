@@ -45,4 +45,8 @@ public class Asteroid {
         }
         return this;
     }
+
+    public float getSpeed() {
+        return speed;
+    }
 }
