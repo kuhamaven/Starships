@@ -17,16 +17,27 @@ import static java.util.Arrays.fill;
 
 public class CustomGameFramework implements GameFramework {
 
-    private StarshipDrawer starshipDrawer;
+    private final int height=720;
+    private final int width=1280;
+    private float asteroidTick=0;
+
+    private StarshipDrawer starshipDrawer1;
+    private StarshipDrawer starshipDrawer2;
     private ProjectileDrawer projectileDrawer;
     private AsteroidDrawer asteroidDrawer1;
     private AsteroidDrawer asteroidDrawer2;
-    private Starship starship1 = new Starship(vector(200, 200), vector(0, -1),true, "player1");
-    private Starship starship2 = new Starship(vector(400, 400), vector(0, -1),true,"player2");
+    private GalaxyDrawer galaxyDrawer;
+    private AsteroidSpawner asteroidSpawner;
+
+    private Starship starship1 = new Starship(vector(100, 100), vector(0, 1),true, "player1");
+    private StarshipController starshipController1 = new StarshipController(0x26,0x28,0x25,0x27, 0x6B);
+    private Starship starship2 = new Starship(vector(100, 620), vector(0, -1),true,"player2");
+    private StarshipController starshipController2 = new StarshipController( 0x57,0x53,0x41,0x44,0x20);
+
     private List<Projectile> projectiles = new ArrayList<>();
+    private List<Projectile> projectiles2 = new ArrayList<>();
     private List<Asteroid> asteroids = new ArrayList<>();
-    private final int height=720;
-    private final int width=1280;
+
 
     private final CollisionEngine engine = new CollisionEngine();
 
@@ -34,31 +45,39 @@ public class CustomGameFramework implements GameFramework {
     public void setup(WindowSettings windowsSettings, ImageLoader imageLoader) {
         windowsSettings
             .setSize(width, height);
+        windowsSettings.fullScreen();
 
-        starshipDrawer = new StarshipDrawer(imageLoader.load("spaceship.png"));
+        asteroidSpawner = new AsteroidSpawner();
+        starshipDrawer1 = new StarshipDrawer(imageLoader.load("spaceship.png"));
+        starshipDrawer2 = new StarshipDrawer(imageLoader.load("spaceship2.png"));
         projectileDrawer = new ProjectileDrawer(imageLoader.load("bullet.png"));
         asteroidDrawer1 = new AsteroidDrawer(imageLoader.load("asteroid1.png"));
         asteroidDrawer2 = new AsteroidDrawer(imageLoader.load("asteroid2.png"));
-        Random random = new Random();
-        for (int i = 0; i < 10; i++) {
-            Vector2 position = vector(random.nextFloat()*width,random.nextFloat()*height);
-            Vector2 direction = vector(random.nextFloat(),random.nextFloat()*-1);
-            asteroids.add(new Asteroid(position,direction,true,random.nextFloat()*4));
-        };
+        galaxyDrawer = new GalaxyDrawer(imageLoader.load("galaxy.png"));
+        for (int i = 0; i < 5; i++) {
+            asteroids.add(asteroidSpawner.spawnAsteroid(width,height));
+        }
+
     }
 
     @Override
     public void draw(PGraphics graphics, float timeSinceLastDraw, Set<Integer> keySet) {
         updateStarship(keySet);
         updateProjectiles();
-        updateAsteroids();
+        updateAsteroids(timeSinceLastDraw);
+        galaxyDrawer.draw(graphics);
         drawStarships(graphics);
         drawProjectiles(graphics);
         drawAsteroids(graphics);
         checkCollisions();
     }
 
-    private void updateAsteroids(){
+    private void updateAsteroids(float timeSinceLastDraw){
+        asteroidTick = asteroidTick + timeSinceLastDraw/100;
+        if( asteroidTick>300) {
+            asteroids.add(asteroidSpawner.spawnAsteroid(width,height));
+            asteroidTick=0;
+        }
         for (int i = asteroids.size()-1; i >= 0; i--) {
             if (!asteroids.get(i).active) asteroids.remove(i);
         }
@@ -90,9 +109,12 @@ public class CustomGameFramework implements GameFramework {
 
     private void checkCollisions() {
         List<SquareCollisionable> collisionables = new ArrayList<>();
-        collisionables.add(starshipDrawer.getCollisionable(starship1));
-        collisionables.add(starshipDrawer.getCollisionable(starship2));
+        collisionables.add(starshipDrawer1.getCollisionable(starship1));
+        collisionables.add(starshipDrawer2.getCollisionable(starship2));
         for (Projectile projectile : projectiles) {
+            collisionables.add(projectileDrawer.getCollisionable(projectile));
+        }
+        for (Projectile projectile : projectiles2) {
             collisionables.add(projectileDrawer.getCollisionable(projectile));
         }
         for (Asteroid asteroid: asteroids) {
@@ -103,51 +125,47 @@ public class CustomGameFramework implements GameFramework {
     }
 
     private void drawStarships(PGraphics graphics) {
-        starshipDrawer.draw(graphics, starship1);
-        starshipDrawer.draw(graphics, starship2);
+        starshipDrawer1.draw(graphics, starship1);
+        starshipDrawer2.draw(graphics, starship2);
     }
 
     private void drawProjectiles(PGraphics graphics){
         for (int i = 0; i < projectiles.size(); i++) {
             projectileDrawer.draw(graphics,projectiles.get(i));
         }
+        for (int i = 0; i < projectiles2.size(); i++) {
+            projectileDrawer.draw(graphics,projectiles2.get(i));
+        }
     }
 
     private void updateProjectiles(){
-        for (int i = 0; i < projectiles.size(); i++) {
-            projectiles.set(i, projectiles.get(i).moveForward(8));
+        updateProjectilesHandler(projectiles);
+        updateProjectilesHandler(projectiles2);
+    }
+
+    private void updateProjectilesHandler(List<Projectile> projectileList){
+        for (int i = 0; i < projectileList.size(); i++) {
+            projectileList.set(i, projectileList.get(i).moveForward(8));
         }
-        for (int i = projectiles.size()-1; i >=0 ; i--) {
-            Vector2 current = projectiles.get(i).getPosition();
-            if( !projectiles.get(i).active || current.getX()>width || current.getX()<0 || current.getY()>height || current.getY()<0)projectiles.remove(i);
+        for (int i = projectileList.size()-1; i >=0 ; i--) {
+            Vector2 current = projectileList.get(i).getPosition();
+            if( !projectileList.get(i).active || current.getX()>width || current.getX()<0 || current.getY()>height || current.getY()<0)projectileList.remove(i);
         }
     }
 
     private void updateStarship(Set<Integer> keySet) {
         if(!starship2.active){
-            starship2 = new Starship(vector(410,400),vector(0,-1),true,"player2");
+            starship2 = new Starship(vector(100,620),vector(0,-1),true,starship2.shipName);
         }
         if(!starship1.active){
-            starship1 =  new Starship(vector(200, 200), vector(0, -1),true,"player1");
+            starship1 =  new Starship(vector(100, 100), vector(0, 1),true,starship1.shipName);
         }
         else {
-            if (keySet.contains(PConstants.UP)) {
-                starship1 = starship1.moveForward(4);
-            }
-
-            if (keySet.contains(PConstants.DOWN)) {
-                starship1 = starship1.moveBackwards(4);
-            }
-
-            if (keySet.contains(PConstants.LEFT)) {
-                starship1 = starship1.rotate(-1 * PConstants.PI / 60);
-            }
-
-            if (keySet.contains(PConstants.RIGHT)) {
-                starship1 = starship1.rotate(PConstants.PI / 60);
-            }
+            starship1 = starshipController1.keyHandle(keySet,starship1,projectiles);
+            starship2 = starshipController2.keyHandle(keySet,starship2,projectiles2);
         }
         starship1 = starshipWarpEdge(starship1);
+        starship2 = starshipWarpEdge(starship2);
     }
 
     private Starship starshipWarpEdge(Starship starship){
@@ -168,13 +186,7 @@ public class CustomGameFramework implements GameFramework {
     }
 
     @Override
-    public void keyPressed(KeyEvent event) {
-        if(event.getKey()==' '){
-                if(projectiles.size()<4){
-                    projectiles.add(starship1.shoot());
-                }
-        }
-    }
+    public void keyPressed(KeyEvent event) {}
 
     @Override
     public void keyReleased(KeyEvent event) {
