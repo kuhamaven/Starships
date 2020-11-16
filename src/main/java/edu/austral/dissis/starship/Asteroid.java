@@ -2,8 +2,6 @@ package edu.austral.dissis.starship;
 
 import edu.austral.dissis.starship.base.vector.Vector2;
 
-import java.util.Random;
-
 import static edu.austral.dissis.starship.base.vector.Vector2.vector;
 
 public class Asteroid {

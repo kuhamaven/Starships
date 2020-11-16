@@ -7,9 +7,11 @@ import edu.austral.dissis.starship.base.framework.WindowSettings;
 import edu.austral.dissis.starship.base.vector.Vector2;
 import processing.core.PGraphics;
 import processing.event.KeyEvent;
-import javax.swing.JOptionPane;
 
-import java.util.*;
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import static edu.austral.dissis.starship.base.vector.Vector2.vector;
 
@@ -23,7 +25,7 @@ public class CustomGameFramework implements GameFramework {
     private ProjectileDrawer projectileDrawer;
     private AsteroidDrawer asteroidDrawer1;
     private AsteroidDrawer asteroidDrawer2;
-    private GalaxyDrawer galaxyDrawer;
+    private BackgroundDrawer backgroundDrawer;
     private AsteroidSpawner asteroidSpawner;
     private ScoreDrawer scoreDrawer;
 
@@ -58,7 +60,7 @@ public class CustomGameFramework implements GameFramework {
         projectileDrawer = new ProjectileDrawer(imageLoader.load("bullet.png"));
         asteroidDrawer1 = new AsteroidDrawer(imageLoader.load("asteroid1.png"));
         asteroidDrawer2 = new AsteroidDrawer(imageLoader.load("asteroid2.png"));
-        galaxyDrawer = new GalaxyDrawer(imageLoader.load("galaxy.png"),imageLoader.load("gameover.png"));
+        backgroundDrawer = new BackgroundDrawer(imageLoader.load("galaxy.png"),imageLoader.load("gameover.png"));
         for (int i = 0; i < 5; i++) {
             asteroids.add(asteroidSpawner.spawnAsteroid());
         }
@@ -70,8 +72,8 @@ public class CustomGameFramework implements GameFramework {
         updateStarship(keySet);
         updateProjectiles();
         updateAsteroids(timeSinceLastDraw);
-        if(gameOver()) galaxyDrawer.drawGameOver(graphics);
-        else galaxyDrawer.draw(graphics);
+        if(gameOver()) backgroundDrawer.drawGameOver(graphics);
+        else backgroundDrawer.draw(graphics);
         drawStarships(graphics);
         drawProjectiles(graphics);
         drawAsteroids(graphics);

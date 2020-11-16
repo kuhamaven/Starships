@@ -3,11 +3,11 @@ package edu.austral.dissis.starship;
 import processing.core.PGraphics;
 import processing.core.PImage;
 
-public class GalaxyDrawer {
+public class BackgroundDrawer {
     private final PImage image;
     private final PImage goImage;
 
-    public GalaxyDrawer(PImage image, PImage goImage) {
+    public BackgroundDrawer(PImage image, PImage goImage) {
         this.image = image;
         this.goImage = goImage;
     }

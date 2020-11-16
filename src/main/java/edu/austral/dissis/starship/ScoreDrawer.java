@@ -1,6 +1,5 @@
 package edu.austral.dissis.starship;
 
-import edu.austral.dissis.starship.base.vector.Vector2;
 import processing.core.PGraphics;
 
 public class ScoreDrawer {

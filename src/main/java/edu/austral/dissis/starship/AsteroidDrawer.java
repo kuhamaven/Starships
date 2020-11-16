@@ -22,15 +22,12 @@ public class AsteroidDrawer {
         final float angle = calculateRotation(asteroid);
 
         graphics.pushMatrix();
-
         graphics.translate(position.getX(), position.getY());
         graphics.rotate(angle);
-
         graphics.noFill();
         graphics.noStroke();
         graphics.rect(image.pixelHeight/-2f,image.pixelHeight/-2f,image.pixelHeight,image.pixelHeight);
         graphics.image(image, getImageCenter(), getImageCenter());
-
         graphics.popMatrix();
     }
 
