@@ -5,15 +5,13 @@ import edu.austral.dissis.starship.base.framework.GameFramework;
 import edu.austral.dissis.starship.base.framework.ImageLoader;
 import edu.austral.dissis.starship.base.framework.WindowSettings;
 import edu.austral.dissis.starship.base.vector.Vector2;
-import processing.core.PConstants;
 import processing.core.PGraphics;
 import processing.event.KeyEvent;
+import javax.swing.JOptionPane;
 
 import java.util.*;
 
 import static edu.austral.dissis.starship.base.vector.Vector2.vector;
-import static java.util.Arrays.asList;
-import static java.util.Arrays.fill;
 
 public class CustomGameFramework implements GameFramework {
 
@@ -29,9 +27,9 @@ public class CustomGameFramework implements GameFramework {
     private GalaxyDrawer galaxyDrawer;
     private AsteroidSpawner asteroidSpawner;
 
-    private Starship starship1 = new Starship(vector(100, 100), vector(0, 1),true, "player1");
+    private Starship starship1;
     private StarshipController starshipController1 = new StarshipController(0x26,0x28,0x25,0x27, 0x6B);
-    private Starship starship2 = new Starship(vector(100, 620), vector(0, -1),true,"player2");
+    private Starship starship2;
     private StarshipController starshipController2 = new StarshipController( 0x57,0x53,0x41,0x44,0x20);
 
     private List<Projectile> projectiles = new ArrayList<>();
@@ -47,7 +45,14 @@ public class CustomGameFramework implements GameFramework {
             .setSize(width, height);
         windowsSettings.fullScreen();
 
-        asteroidSpawner = new AsteroidSpawner();
+        String player1Name;
+        String player2Name;
+        player1Name = JOptionPane.showInputDialog("What is player 1's name? ");
+        player2Name = JOptionPane.showInputDialog("What is player 2's name? ");
+        starship1 = new Starship(vector(100, 100), vector(0, 1),true, player1Name,0);
+        starship2 = new Starship(vector(100, 620), vector(0, -1),true,player2Name,0);
+
+        asteroidSpawner = new AsteroidSpawner(width,height);
         starshipDrawer1 = new StarshipDrawer(imageLoader.load("spaceship.png"));
         starshipDrawer2 = new StarshipDrawer(imageLoader.load("spaceship2.png"));
         projectileDrawer = new ProjectileDrawer(imageLoader.load("bullet.png"));
@@ -55,7 +60,7 @@ public class CustomGameFramework implements GameFramework {
         asteroidDrawer2 = new AsteroidDrawer(imageLoader.load("asteroid2.png"));
         galaxyDrawer = new GalaxyDrawer(imageLoader.load("galaxy.png"));
         for (int i = 0; i < 5; i++) {
-            asteroids.add(asteroidSpawner.spawnAsteroid(width,height));
+            asteroids.add(asteroidSpawner.spawnAsteroid());
         }
 
     }
@@ -73,30 +78,13 @@ public class CustomGameFramework implements GameFramework {
     }
 
     private void updateAsteroids(float timeSinceLastDraw){
-        asteroidTick = asteroidTick + timeSinceLastDraw/100;
-        if( asteroidTick>300) {
-            asteroids.add(asteroidSpawner.spawnAsteroid(width,height));
-            asteroidTick=0;
-        }
+        asteroids = asteroidSpawner.AsteroidCheck(timeSinceLastDraw,asteroids);
         for (int i = asteroids.size()-1; i >= 0; i--) {
             if (!asteroids.get(i).active) asteroids.remove(i);
         }
         for (int i = 0; i < asteroids.size(); i++) {
-            asteroids.set(i, asteroids.get(i).moveForward());
-            Asteroid asteroid = asteroids.get(i);
-            Vector2 current = asteroids.get(i).getPosition();
-            if( current.getX()>width){
-                asteroids.set(i,new Asteroid(vector(0,asteroid.getPosition().getY()),asteroid.getDirection(),asteroid.active,asteroid.speed));
-            }
-            else if(current.getX()<0){
-                asteroids.set(i,new Asteroid(vector(width,asteroid.getPosition().getY()),asteroid.getDirection(),asteroid.active,asteroid.speed));
-            }
-            else if(current.getY()>height){
-                asteroids.set(i,new Asteroid(vector(asteroid.getPosition().getX(),0),asteroid.getDirection(),asteroid.active,asteroid.speed));
-            }
-            else if(current.getY()<0){
-                asteroids.set(i,new Asteroid(vector(asteroid.getPosition().getX(),height),asteroid.getDirection(),asteroid.active,asteroid.speed));
-            }
+            Asteroid current = asteroids.get(i).moveForward();
+            asteroids.set(i, current.screenWarp(width,height));
         }
     }
 
@@ -155,41 +143,22 @@ public class CustomGameFramework implements GameFramework {
 
     private void updateStarship(Set<Integer> keySet) {
         if(!starship2.active){
-            starship2 = new Starship(vector(100,620),vector(0,-1),true,starship2.shipName);
+            starship2 = new Starship(vector(100,620),vector(0,-1),true,starship2.shipName,0);
         }
         if(!starship1.active){
-            starship1 =  new Starship(vector(100, 100), vector(0, 1),true,starship1.shipName);
+            starship1 =  new Starship(vector(100, 100), vector(0, 1),true,starship1.shipName,0);
         }
         else {
             starship1 = starshipController1.keyHandle(keySet,starship1,projectiles);
             starship2 = starshipController2.keyHandle(keySet,starship2,projectiles2);
         }
-        starship1 = starshipWarpEdge(starship1);
-        starship2 = starshipWarpEdge(starship2);
-    }
-
-    private Starship starshipWarpEdge(Starship starship){
-        Vector2 current = starship.getPosition();
-        if( current.getX()>width){
-            return new Starship(vector(0,current.getY()),starship.getDirection(),starship.active,starship.shipName);
-        }
-        else if(current.getX()<0){
-            return new Starship(vector(width,current.getY()),starship.getDirection(),starship.active,starship.shipName);
-        }
-        else if(current.getY()>height){
-            return new Starship(vector(current.getX(),0),starship.getDirection(),starship.active,starship.shipName);
-        }
-        else if(current.getY()<0){
-            return new Starship(vector(current.getX(), height),starship.getDirection(),starship.active,starship.shipName);
-        }
-        return starship;
+        starship1 = starshipController1.starshipWarpEdge(starship1,width,height);
+        starship2 = starshipController2.starshipWarpEdge(starship2,width,height);
     }
 
     @Override
     public void keyPressed(KeyEvent event) {}
 
     @Override
-    public void keyReleased(KeyEvent event) {
-
-    }
+    public void keyReleased(KeyEvent event) {}
 }

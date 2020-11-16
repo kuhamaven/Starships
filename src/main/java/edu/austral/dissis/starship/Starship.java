@@ -7,24 +7,26 @@ public class Starship {
     private final Vector2 direction;
     boolean active;
     String shipName;
+    float score;
 
-    public Starship(Vector2 position, Vector2 direction, boolean active, String shipName) {
+    public Starship(Vector2 position, Vector2 direction, boolean active, String shipName, float score) {
         this.position = position;
         this.direction = direction.asUnitary();
         this.active = active;
         this.shipName = shipName;
+        this.score=score;
     }
 
     public Starship rotate(float angle) {
-        return new Starship(position, direction.rotate(angle),active,shipName);
+        return new Starship(position, direction.rotate(angle),active,shipName,score);
     }
 
     public Starship moveForward(float speed) {
-        return new Starship(position.add(direction.multiply(speed)), direction,active,shipName);
+        return new Starship(position.add(direction.multiply(speed)), direction,active,shipName,score);
     }
 
     public Starship moveBackwards(float speed) {
-        return new Starship(position.subtract(direction.multiply(speed)), direction,active,shipName);
+        return new Starship(position.subtract(direction.multiply(speed)), direction,active,shipName,score);
     }
 
     public Vector2 getPosition() { return position; }

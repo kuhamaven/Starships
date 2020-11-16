@@ -4,6 +4,8 @@ import edu.austral.dissis.starship.base.vector.Vector2;
 
 import java.util.Random;
 
+import static edu.austral.dissis.starship.base.vector.Vector2.vector;
+
 public class Asteroid {
     private final Vector2 position;
     private final Vector2 direction;
@@ -27,5 +29,22 @@ public class Asteroid {
 
     public void destroy() {
         active = false;
+    }
+
+    public Asteroid screenWarp(int width, int height){
+        Vector2 current = position;
+        if( current.getX()>width){
+            return new Asteroid(vector(0,current.getY()),direction,active,speed);
+        }
+        else if(current.getX()<0){
+            return new Asteroid(vector(width,current.getY()),direction,active,speed);
+        }
+        else if(current.getY()>height){
+          return new Asteroid(vector(current.getX(),0),direction,active,speed);
+        }
+        else if(current.getY()<0){
+            return new Asteroid(vector(current.getX(),height),direction,active,speed);
+        }
+        return this;
     }
 }
